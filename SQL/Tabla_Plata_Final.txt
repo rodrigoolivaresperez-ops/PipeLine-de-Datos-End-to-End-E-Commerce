@@ -1,0 +1,65 @@
+-- Usamos la misma base de datos
+use Ecommerce_sales;
+-- Creamos la tabla Silver Limpia con los fomatos establecidos para eliminar aquellos errores que hemos ido encontrando.
+insert into Tabla_Original (ID, Customer_Name, Order_ID, Order_Date, Product, Category, Quantity, Price, Payment_Method, Status, Total)
+with Tabla_Silver_Limpia as (
+     select
+           cast(ID as unsigned) as ID_Limpio,
+           Customer_Name, 
+           Order_ID,
+           case
+               when Order_Date like '%-%' then str_to_date(Order_date, '%Y-%m-%d') -- Tipo YYYY-MM-DD
+               when Order_Date like '% %' then str_to_date(trim(Order_date), '%b %e %Y') -- Tipo MM/DD/YYYY
+               when Order_Date like '% %' then str_to_date(Order_date, '%d %m %Y') -- Tipo March 05 2024
+		   else null
+           end as Order_Date_Limpio,
+           Product,
+           Category,
+           if (Quantity regexp '^[0-9]+$', cast(Quantity as unsigned), 0) as Quantity_Limpio,
+           if (Price regexp '^[0-9.]+$', cast(Price as decimal (10,2)), 0.00) as Price_Limpio,
+           Payment_Method,
+           Status
+from Tabla_Bronce_Temporal
+)
+-- Deduplicamos valores para no tener problemas de carga como lo teniamos con los ID 
+select
+ ID_Limpio,
+ max(Customer_Name),
+ max(Order_ID),
+ max(Order_Date_Limpio),
+ max(Product),
+ max(Category),
+ max(Quantity_Limpio),
+ max(Price_Limpio),
+ max(Payment_Method),
+ max(Status),
+ max(Quantity_Limpio * Price_Limpio) as Total_Limpio
+From Tabla_Silver_Limpia
+group by ID_Limpio
+;
+-- Revisamos errores en los registros.
+select count(*) from tabla_original;
+-- Primera Fecha Registrada: 2023-01-05 y excel: 2023-01-05
+select min(Order_Date) from tabla_original;
+-- Ultima Fecha Registrada: 2025-11-06 y excel: 2025-11-06 
+select max(Order_Date) from tabla_original;
+-- Facturacion total: 130.433,87 a diferencia del primer primer resultado al cargar la data: -74.982,62
+select sum(Total) from Tabla_Original;
+-- Creamos la View para que Power BI no tenga que procesar
+create or replace view vw_Ventas_Analisis as 
+select
+     ID, 
+     Customer_Name as Cliente,
+     Order_ID as Ticket, 
+     Order_Date as Fecha, 
+     Product as Producto, 
+     Category as Categoria, 
+     Quantity as Cantidad, 
+     Price as Precio, 
+     Payment_Method as Metodo_Pago, 
+     Status as Estado_Envio, 
+     Total as Venta_Total
+from Tabla_Original
+where total > 0;      
+-- Cuantos registros tienen Total igual a 0 (son aquellos que no apareceran en la view producto del where > 0)?
+select count(*) from Tabla_Original where Total = 0;

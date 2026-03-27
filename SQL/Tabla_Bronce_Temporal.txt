@@ -1,0 +1,53 @@
+-- Usamos la misma base de datos
+use Ecommerce_sales;
+-- Creamos la tabla Bronce Temporal con los formatos en modo Texto o Varchar para cargar la totalidad de la data.
+create table Tabla_Bronce_Temporal (
+ID varchar (50) not null,
+Customer_Name varchar (50) not null,
+Order_ID varchar (50) not null,
+Order_Date varchar (50) not null,
+Product varchar (50) not null,
+Category varchar (50) not null,
+Quantity varchar (50) not null,
+Price varchar (50) not null,
+Payment_Method varchar (50) not null,
+Status varchar (50) not null,
+Total varchar (50) not null,
+primary key (ID)
+);
+-- Cargamos la data original modificando el formato de registro de nuestras columnas de SQL a texto para que se cargue el total de la data sin errores.
+load data local infile 'C:/Users/rodri/OneDrive/Escritorio/Pipeline de Datos End-to-End (E-Commerce)/Data/Excel/messy_ecommerce_sales_data.csv'
+into table Tabla_Bronce_Temporal 
+character set utf8mb4
+fields terminated by ','
+optionally enclosed by '"'
+lines terminated by '\r\n'
+ignore 1 rows;
+-- Dentro de los errores, hay uno relevante que nos avisa que existen duplicados en los ID, esto gracias a la primary key(ID). ID Duplicados: 142, 146 y 175.
+-- Revisamos la carga de la data original
+-- Total de registros: Nos arroja 100 y en excel se ven 103 esto se explica por la duplicacion de registros con el mismo ID
+select count(*) from Tabla_Bronce_Temporal as Total_Registros;
+-- Contador de id: Nos arroja 100 y en excel 99
+select count(ID) from Tabla_Bronce_Temporal as Total_IDs;
+-- ID menor: 100 y en excel 100
+select min(ID) from Tabla_Bronce_Temporal as ID_Menor;
+-- ID mayor: 199 y en excel 199
+select max(ID) from Tabla_Bronce_Temporal as ID_Mayor;
+-- Order_Id_Menor: ORD-11261 y en excel ORD-11261
+select min(Order_ID) from Tabla_Bronce_Temporal as Order_ID_Menor;
+-- Order_Id_Mayor: ORD-99790 y en excel ORD-99790
+select max(Order_ID) from Tabla_Bronce_Temporal as Order_ID_Mayor;
+-- Primera Fecha Registrada: 05/01/2023 y en excel 05/01/2023 tambien tenemos abc y Jan 5 2023
+select min(Order_Date) from Tabla_Bronce_Temporal as Primera_Fecha_Registrada;
+-- Ultima Fecha Registrada: Jan 5 2023 y en excel 2025-11-06 esto se explica ya que al considerar dates en formato varchar nos consdiera las fechas con diferetes formatos las cuales
+-- se ubican siempre dentro de los primeros registros cuando ordenamos de mayor a menos las fechas.
+select max(Order_Date) from Tabla_Bronce_Temporal as Ultima_Fecha_Registrada;
+-- Contador de nulos en la columna Category
+select count(*) from Tabla_Bronce_Temporal where Category is null;
+-- Facturacion total: -74.982,62 este indicador nos arroja un valor relevante que se explica por la data sucia, como nos sigue arrojando el mismo resultado, podemos deducir
+-- que el formato en que se esta calculando el "Total" es el erroneo.
+select sum(Total) from Tabla_Bronce_Temporal as Total_Factura;
+-- Limpiamos la tabla 
+truncate table Tabla_Bronce_Temporal;
+-- Borra la tabla
+drop table Tabla_Bronce_Temporal;
