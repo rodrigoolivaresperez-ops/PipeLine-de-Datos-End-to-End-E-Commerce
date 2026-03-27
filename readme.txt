@@ -46,6 +46,9 @@ Facturación Total                 -$74,982.62 (Erróneo)                  $108,
 Fecha Inicial                     Nula / Inconsistente                   2025-01-05
 Registros                         103 aprox (Con basura)                 102 (Validados)
 
+Visualización de Resultados
+![Dashboard](Power%20BI/dashboard.png)
+
 Como replicar este proyecto
 1. Ejecuta en MySQL los archivos: Tabla_Original.txt luego Tabla_Bronce_Temporal.txt y finalmente Tabla_PLata_Final.txt (En ese orden).
 2. Carga el dataset de messy_ecommerce_sales_data.csv.
