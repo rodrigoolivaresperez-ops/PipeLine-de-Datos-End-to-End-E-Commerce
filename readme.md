@@ -1,5 +1,7 @@
 E-Commerce Data Pipeline & Dashboard Financiero
 
+Fuente de Datos: [Messy E-Commerce Sales Dataset (Kaggle)](https://www.kaggle.com/datasets/kandeelai22/messy-e-commerce-sales-dataset)
+
 Descripción del Proyecto:
 Este proyecto implementa un flujo completo de datos (End-to-End), transformando un dataset transaccional altamente inconsistente (messy_ecommerce_sales_data.csv) en un tablero de control estratégico. El objetivo fue garantizar la integridad financiera desde la base de datos hasta la visualización final.
 
