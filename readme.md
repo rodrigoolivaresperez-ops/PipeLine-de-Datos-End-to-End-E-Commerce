@@ -47,7 +47,7 @@ Fecha Inicial                     Nula / Inconsistente                   2025-01
 Registros                         103 aprox (Con basura)                 102 (Validados)
 
 Visualización de Resultados
-![Dashboard de Cotrol de Ventas](Power%20BI/Dashboard.png)
+![Dashboard de Control de Ventas](./Power%20BI/Dashboard.png)
 
 Como replicar este proyecto
 1. Ejecuta en MySQL los archivos: Tabla_Original.txt luego Tabla_Bronce_Temporal.txt y finalmente Tabla_PLata_Final.txt (En ese orden).
